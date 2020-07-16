@@ -22,14 +22,14 @@ func Handler(filePath string, duration time.Duration) {
 	score := 0
 	timerChannel := time.After(duration)
 	userInputChannel := make(chan string)
-	userInputFunction:= func() {
-		var ans string
-		fmt.Scanf("%s", &ans)
-		userInputChannel <- ans
-	}
+
 	for _, problem := range problems {
 		fmt.Println(problem.question)
-		go userInputFunction()
+		go func() {
+			var ans string
+			fmt.Scanf("%s", &ans)
+			userInputChannel <- ans
+		}()
 		select {
 		case <-timerChannel:
 			fmt.Println("Time elapsed")
@@ -46,7 +46,7 @@ func Handler(filePath string, duration time.Duration) {
 }
 
 func parseQuestions( records [][] string) []problem {
-	parsedProblems := make([]problem, 1)
+	parsedProblems := []problem{}
 	for _, record := range records {
 		parsedProblems = append(parsedProblems, problem{
 			question: strings.TrimSpace(record[0]),
